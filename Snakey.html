@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--标题-->
+<title>Snakey</title>
+</head>
+<!--设置body中元素居中，外边距100像素，背景颜色为#aaaaaa-->
+<body style="text-align:center;margin:100px;background-color:#aaaaaa">
+<!--设置id，宽400像素，高400像素，背景颜色设置为灰色-->
+<canvas id="canv" width="400" height="400" style="background-color:gray">
+</canvas>
+<script>
+//声明变量
+//设置canvas画布的绘图的环境，当前唯一支持的参数是2d
+var box=document.getElementById('canv').getContext('2d');
+//声明一个变量表示蛇
+var snake;
+//声明键盘事件的变量。1表示向右，-1向左，20向下，-20向上
+var direction;
+//下次移动相关
+var n;
+//声明食物变量
+var food;
+
+//绘制地图
+function draw(point,color){
+//fillStyle()方法为设置用于填充绘画的颜色
+box.fillStyle=color;
+//fillRect()方法用于绘制“被填充”的矩形
+box.fillRect(point%20*20+1,~~(point/20)*20+1,18,18);
+}
+//自动运行函数
+(function(){ready();}());
+//各种变量初始化，背景初始化
+function ready(){
+//循环绘制地图块
+for(var i=0;i<400;i++){
+draw(i,"#313131");}
+//对蛇和食物进行静态赋值并绘制到地图上
+snake=[66,65,64];
+direction=1;
+food=344;
+draw(food,"yellow");
+draw(66,"#00b7ee");
+draw(65,"#00b7ee");
+draw(64,"#00b7ee");
+}
+
+//核心算法
+function run(){
+//在游戏开始以后“开始游戏”按钮变为不可点击状态
+document.getElementById("butn").setAttribute("disabled",true);
+//用unshift()方法向数组的开头添加一个新元素，新元素为蛇下一步所移动的坐标
+snake.unshift(n=snake[0]+direction);
+//边界判断，如果蛇头碰到上下左右四个边或者碰到自己的身子
+//游戏结束，初始化游戏，将“开始游戏”按钮设置为可以点击，点击开始按钮可以重新进行游戏
+if(snake.indexOf(n,1)>0||n<0||n>399||(direction==-1&&n%20==19)||(direction==1&&n%20==0))
+{ready();
+document.getElementById("butn").removeAttribute("disabled");
+return alert("游戏结束");}
+//如果蛇头没有碰到边界或蛇身，在地图上绘制蛇头
+draw(n,"#00b7ee");
+//如果蛇头吃到了食物（坐标相同）
+if(n==food){
+//随机在地图上产生一个新食物，新事物不能于蛇身子重合
+while(snake.indexOf(food=~~(Math.random()*400))>0);
+//绘制食物
+draw(food,"yellow");
+}
+//如果蛇头没有吃到食物
+else{
+//将蛇尾元素删除并且根据删除的坐标绘制为地图块的颜色
+draw(snake.pop(),"#313131");}
+//每200毫秒重复执行一次该函数
+setTimeout(arguments.callee,200);
+}
+
+//添加键盘事件
+document.onkeydown=function(e){
+//如果蛇当前横着走，当键盘输入up时，将蛇头方向改为向上，输入down时将蛇头方向改为向下
+if((direction==1||direction==-1)&&(snake[0]-snake[1]==1||snake[0]-snake[1]==-1)){
+if(e.keyCode==38)
+{direction=-20;}
+if(e.keyCode==40)
+{direction=20;}
+}
+//如果蛇当前竖着走，当键盘输入left时向左，right时向右
+if((direction==20||direction==-20)&&(snake[0]-snake[1]==20||snake[0]-snake[1]==-20)){
+if(e.keyCode==39)
+{direction=1;}
+if(e.keyCode==37)
+{direction=-1;}
+}}
+
+</script>
+<div>
+<!--设置游戏开始按钮-->
+<button id="butn" type="button" onclick="run()">开始游戏</button>
+</div>
+</body>
+</html>
